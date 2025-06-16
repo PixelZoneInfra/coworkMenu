@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Menu - Biurko {{ desk }}</title>
+  <script>
+    async function submitOrder() {
+      const items = Array.from(document.querySelectorAll('input[type=checkbox]:checked'))
+        .map(cb => cb.value);
+      const desk = '{{ desk }}';
+      const res = await fetch('/api/order', {
+        method: 'POST', headers: {'Content-Type':'application/json'},
+        body: JSON.stringify({desk, items})
+      });
+      const data = await res.json();
+      if (res.status===201) alert('Zamówienie złożone! ID: ' + data.order_id);
+      else alert(data.error);
+    }
+  </script>
+</head>
+<body>
+  <h1>Menu - biurko {{ desk }}</h1>
+  <form onsubmit="event.preventDefault(); submitOrder();">
+    <label><input type="checkbox" value="Kawa"> Kawa</label><br>
+    <label><input type="checkbox" value="Herbata"> Herbata</label><br>
+    <label><input type="checkbox" value="Ciasto"> Ciasto</label><br>
+    <label><input type="checkbox" value="Napoje zimne"> Napoje zimne</label><br>
+    <button type="submit">Zamów</button>
+  </form>
+</body>
+</html>
