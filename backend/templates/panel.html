@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Panel Baru - Kolejka zamówień</title>
+  <style>
+    body { font-family: sans-serif; text-align: center; transition: background-color 0.5s; }
+    .order { margin: 10px; padding: 10px; border: 1px solid #ccc; }
+  </style>
+  <script>
+    let orders = [];
+    async function fetchOrders() {
+      const res = await fetch('/api/orders');
+      orders = await res.json();
+      render();
+    }
+    async function markDone(id) {
+      await fetch('/api/order/' + id, {method:'DELETE'});
+      fetchOrders();
+    }
+    function render() {
+      const container = document.getElementById('orders');
+      container.innerHTML = '';
+      orders.forEach(o => {
+        const div = document.createElement('div');
+        div.className = 'order';
+        div.innerHTML = `#${o.id} | Biurko ${o.desk} | ${o.items}
+                        <button onclick="markDone(${o.id})">Wydano</button>`;
+        container.appendChild(div);
+      });
+    }
+    setInterval(fetchOrders, 2000);
+    setInterval(() => {
+      document.body.style.backgroundColor =
+        `rgb(${rand()},${rand()},${rand()})`;
+    }, 2000);
+    function rand(){return Math.floor(Math.random()*256)}
+    window.onload = fetchOrders;
+  </script>
+</head>
+<body>
+  <h1>Kolejka zamówień</h1>
+  <div id="orders"></div>
+</body>
+</html>
