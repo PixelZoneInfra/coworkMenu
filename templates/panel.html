@@ -5,42 +5,92 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Panel Baru - Kolejka zamówień</title>
   <style>
-    body { font-family: sans-serif; text-align: center; transition: background-color 0.5s; }
-    .order { margin: 10px; padding: 10px; border: 1px solid #ccc; }
+    body {
+      font-family: sans-serif;
+      text-align: center;
+      transition: background-color 0.5s;
+      background-color: white; /* domyślnie biały */
+    }
+    #toggleAlarm {
+      margin: 20px auto;
+      padding: 10px 20px;
+      font-size: 1rem;
+    }
+    .order {
+      margin: 10px;
+      padding: 10px;
+      border: 1px solid #ccc;
+    }
   </style>
+</head>
+<body>
+  <h1>Kolejka zamówień</h1>
+  <button id="toggleAlarm">Wyłącz alarm</button>
+  <div id="orders"></div>
+
   <script>
     let orders = [];
-    async function fetchOrders() {
-      const res = await fetch('/api/orders');
-      orders = await res.json();
-      render();
+    let prevCount = 0;                 // poprzednia liczba zamówień
+    let pulseInterval = null;
+    let alarmEnabled = true;           // czy alarm jest aktywny
+    const POLL_INTERVAL = 1000;
+
+    // Generowanie losowego koloru
+    function randomColor() {
+      const r = Math.floor(Math.random() * 256);
+      const g = Math.floor(Math.random() * 256);
+      const b = Math.floor(Math.random() * 256);
+      return `rgb(${r},${g},${b})`;
     }
-    async function markDone(id) {
-      await fetch('/api/order/' + id, {method:'DELETE'});
-      fetchOrders();
+
+    // Start pulsowania (jeśli alarmEnabled)
+    function startPulsing() {
+      if (!alarmEnabled || pulseInterval !== null) return;
+      pulseInterval = setInterval(() => {
+        document.body.style.backgroundColor = randomColor();
+      }, POLL_INTERVAL);
     }
+
+    // Stop pulsowania i ustaw biały
+    function stopPulsing() {
+      if (pulseInterval !== null) {
+        clearInterval(pulseInterval);
+        pulseInterval = null;
+      }
+      document.body.style.backgroundColor = 'white';
+    }
+
+    // Render listy i kontrola alarmu
     function render() {
       const container = document.getElementById('orders');
       container.innerHTML = '';
       orders.forEach(o => {
         const div = document.createElement('div');
         div.className = 'order';
-        div.innerHTML = `#${o.id} | Biurko ${o.desk} | ${o.items}
-                        <button onclick="markDone(${o.id})">Wydano</button>`;
+        div.innerHTML = `
+          #${o.id} | Biurko ${o.desk} | ${o.items}
+          <button onclick="markDone(${o.id})">Wydano</button>
+        `;
         container.appendChild(div);
       });
+
+      // Jeśli przybyło zamówień -> reset alarmu
+      if (orders.length > prevCount) {
+        alarmEnabled = true;
+      }
+
+      // Włącz/wyłącz pulsowanie
+      if (orders.length > 0 && alarmEnabled) {
+        startPulsing();
+      } else {
+        stopPulsing();
+      }
+
+      // Aktualizuj prevCount
+      prevCount = orders.length;
     }
-    setInterval(fetchOrders, 2000);
-    setInterval(() => {
-      document.body.style.backgroundColor =
-        `rgb(${rand()},${rand()},${rand()})`;
-    }, 2000);
-    function rand(){return Math.floor(Math.random()*256)}
-    window.onload = fetchOrders;
-  </script>
-</head>
-<body>
-  <h1>Kolejka zamówień</h1>
-  <div id="orders"></div>
-</body>
-</html>
+
+    // Pobierz zamówienia
+    async function fetchOrders() {
+      try {
+        const res = await fetch('/ap
