@@ -1,80 +1,57 @@
-// menu logic
-const params = new URLSearchParams(window.location.search);
-const desk = params.get('desk') || '?';
-document.getElementById('deskNum').textContent = desk;
+// panel logic
+let orders = [], prevCount = 0, pulse = null, alarmOn = true;
+const POLL = 2000;
+const ordersDiv = document.getElementById('orders');
+const btn = document.getElementById('toggleAlarm');
 
-const LIMIT = 2;
-let used = 0;
-
-document.querySelectorAll('.category-header').forEach(h => {
-  h.onclick = () => h.nextElementSibling.classList.toggle('visible');
-});
-
-document.querySelectorAll('.item').forEach(item => {
-  const dec = item.querySelector('.dec');
-  const inc = item.querySelector('.inc');
-  const input = item.querySelector('.qty');
-  [dec, inc].forEach(btn => btn.onclick = () => {
-    let v = parseInt(input.value) || 0;
-    v = btn.classList.contains('inc') ? v+1 : v-1;
-    if (v<0) v=0; if (v>20) v=20;
-    input.value = v;
-    input.parentElement.classList.toggle('active', v>0);
-  });
-  input.onfocus = () => input.parentElement.classList.add('active');
-  input.onblur  = () => {
-    if (parseInt(input.value)===0) input.parentElement.classList.remove('active');
-  };
-});
-
-document.getElementById('clearAll').onclick = () => {
-  document.querySelectorAll('.qty').forEach(i => {
-    i.value=0; i.parentElement.classList.remove('active');
-  });
+btn.onclick = () => {
+  alarmOn = false;
+  stopPulse();
 };
 
-document.getElementById('orderBtn').onclick = () => {
-  const entries = [];
-  document.querySelectorAll('.item').forEach(it => {
-    const qty = parseInt(it.querySelector('.qty').value)||0;
-    if (qty>0) {
-      const name = it.querySelector('.item-name').textContent;
-      entries.push({ name, qty });
-    }
+function randColor() {
+  return `rgb(${[0,1,2].map(_=>Math.floor(Math.random()*256)).join(',')})`;
+}
+function startPulse() {
+  if (!alarmOn || pulse) return;
+  pulse = setInterval(() => {
+    document.body.style.backgroundColor = randColor();
+  }, 1000);
+}
+function stopPulse() {
+  clearInterval(pulse);
+  pulse = null;
+  document.body.style.backgroundColor = 'white';
+}
+
+async function loadOrders() {
+  const res = await fetch('/api/orders');
+  orders = await res.json();
+  render();
+}
+
+function render() {
+  ordersDiv.innerHTML = '';
+  orders.forEach(o => {
+    const el = document.createElement('div');
+    el.className = 'order';
+    el.innerHTML = `
+      <div><strong>#${o.id}</strong> biurko ${o.desk}: ${o.items}</div>
+      <button data-id="${o.id}">Wydano</button>
+    `;
+    ordersDiv.appendChild(el);
+    el.querySelector('button').onclick = async () => {
+      await fetch(`/api/order/${o.id}`, { method: 'DELETE' });
+      loadOrders();
+    };
   });
-  if (entries.length===0) {
-    alert('Wybierz przynajmniej jedną pozycję.');
-    return;
-  }
-  if (used >= LIMIT) {
-    alert(`Limit zamówień (${LIMIT}) wyczerpany.`);
-    return;
-  }
 
-  const list = document.getElementById('summaryList');
-  list.innerHTML = entries.map(e => `<div>${e.qty}× ${e.name}</div>`).join('');
-  document.getElementById('summaryModal').style.display = 'flex';
+  if (orders.length > prevCount) alarmOn = true;
+  prevCount = orders.length;
 
-  document.getElementById('editBtn').onclick = () => {
-    document.getElementById('summaryModal').style.display = 'none';
-  };
-  document.getElementById('confirmBtn').onclick = async () => {
-    await fetch('/api/order', {
-      method: 'POST',
-      headers: {'Content-Type':'application/json'},
-      body: JSON.stringify({
-        desk: parseInt(desk),
-        items: entries.map(e=>`${e.qty}×${e.name}`).join(', ')
-      })
-    });
-    used++;
-    document.getElementById('limitInfo').textContent =
-      `Pozostało zamówień: ${Math.max(0, LIMIT - used)}`;
-    document.getElementById('summaryModal').style.display = 'none';
-    document.getElementById('clearAll').click();
-    alert('Zamówienie wysłane!');
-  };
-};
+  if (orders.length && alarmOn) startPulse();
+  else stopPulse();
+}
 
-document.getElementById('limitInfo').textContent =
-  `Pozostało zamówień: ${Math.max(0, LIMIT - used)}`;
+loadOrders();
+setInterval(loadOrders, POLL);
