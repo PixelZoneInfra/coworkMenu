@@ -5,9 +5,10 @@ services:
     env: python
     region: oregon
     plan: free
-    workingDirectory: backend
+
     buildCommand: pip install -r requirements.txt
     startCommand: python app.py
+
     envVars:
       - key: FLASK_ENV
         value: production
@@ -17,6 +18,7 @@ services:
         value: "2"
       - key: ANTISPAM_WINDOW_MINUTES
         value: "5"
+
 # Opcjonalnie HTTP Basic Auth
 #      - key: BASIC_AUTH_USER
 #        value: "user"
