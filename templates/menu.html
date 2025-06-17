@@ -3,73 +3,49 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Restauracja – Menu</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <title>Menu – stolik <span id="deskNum"></span></title>
+  <link rel="stylesheet" href="{{ url_for('static',filename='style.css') }}">
 </head>
 <body>
   <div class="container">
     <h1>Menu – stolik <span id="deskNum"></span></h1>
+    <div id="limitBar">
+      Limit: <span id="used">0</span>/<span id="limit">0</span>,
+      Reset za <span id="timer">—</span>s
+    </div>
 
-    <!-- Kategorie -->
+    <!-- Przykładowa kategoria -->
     <div class="category">
       <div class="category-header">☕ Gorące napoje</div>
       <div class="category-items">
-        <div class="item">
-          <div class="item-name">Kawa</div>
+        <div class="item" data-name="Caffe Latte M" data-price="12.90">
+          <div class="item-name">Caffe Latte M</div>
           <div class="qty-controls">
             <button class="dec">–</button>
             <input type="number" class="qty" min="0" max="20" value="0">
             <button class="inc">+</button>
           </div>
+          <div class="item-price">12.90 PLN</div>
         </div>
-        <div class="item">
-          <div class="item-name">Herbata</div>
-          <div class="qty-controls">
-            <button class="dec">–</button>
-            <input type="number" class="qty" min="0" max="20" value="0">
-            <button class="inc">+</button>
-          </div>
-        </div>
+        <!-- dodaj kolejne items analogicznie -->
       </div>
     </div>
 
-    <div class="category">
-      <div class="category-header">🍰 Ciasta i słodycze</div>
-      <div class="category-items">
-        <div class="item">
-          <div class="item-name">Sernik</div>
-          <div class="qty-controls">
-            <button class="dec">–</button>
-            <input type="number" class="qty" min="0" max="20" value="0">
-            <button class="inc">+</button>
-          </div>
-        </div>
-        <!-- dodaj inne pozycje analogicznie -->
-      </div>
-    </div>
-
-    <!-- Sterowanie -->
+    <!-- Akcje -->
     <div class="actions">
       <button id="clearAll">Wyczyść</button>
       <button id="orderBtn">Zamawiam</button>
     </div>
 
-    <!-- Modal podsumowania -->
-    <div id="summaryModal">
-      <div id="summaryContent">
-        <h2>Podsumowanie zamówienia</h2>
-        <div id="summaryList"></div>
-        <div class="modal-actions">
-          <button id="editBtn">Edytuj</button>
-          <button id="confirmBtn">Potwierdź</button>
-        </div>
-      </div>
+    <!-- Podsumowanie -->
+    <div id="summary" class="hidden">
+      <h2>Podsumowanie</h2>
+      <div id="summaryList"></div>
+      <div class="summary-total">Razem: <span id="summarySum">0.00</span> PLN</div>
+      <button id="confirmBtn">Potwierdź</button>
+      <button id="editBtn">Edytuj</button>
     </div>
-
-    <!-- Info limitu -->
-    <p id="limitInfo"></p>
   </div>
-
-  <script src="{{ url_for('static', filename='script-menu.js') }}"></script>
+  <script src="{{ url_for('static',filename='script-menu.js') }}"></script>
 </body>
 </html>
