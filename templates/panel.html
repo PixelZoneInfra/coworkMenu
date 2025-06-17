@@ -4,18 +4,35 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>Panel Zamówień</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
   <link rel="stylesheet" href="{{ url_for('static', filename='panel.css') }}">
 </head>
 <body>
-  <h1>Panel Zamówień</h1>
+  <div class="container">
+    <header>
+      <h1>Panel Zarządzania Zamówieniami</h1>
+      <div class="stats">
+        <span id="total-orders">Zamówienia: 0</span>
+        <span id="pending-orders">Oczekujące: 0</span>
+        <span id="completed-orders">Zakończone: 0</span>
+      </div>
+    </header>
+
+    <div class="orders-container">
+      <div class="orders-queue">
+        <h2>Zamówienia w trakcie</h2>
+        <div id="orders-list"></div>
+      </div>
+      <div class="completed-orders-section">
+        <h2>Zakończone</h2>
+        <div id="completed-orders-list"></div>
+      </div>
+    </div>
+  </div>
+
+  <div id="alert-overlay" class="alert-overlay"></div>
   <button id="toggleAlarm">Wyłącz alarm</button>
 
-  <h2>Aktywne zamówienia</h2>
-  <div id="active"></div>
-
-  <h2>Zakończone</h2>
-  <div id="done"></div>
-
-  <script src="{{ url_for('static',filename='script-panel.js') }}"></script>
+  <script src="{{ url_for('static', filename='panel.js') }}"></script>
 </body>
 </html>
