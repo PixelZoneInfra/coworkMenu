@@ -9,13 +9,7 @@
       font-family: sans-serif;
       text-align: center;
       transition: background-color 0.5s;
-      background-color: white;
-    }
-    #toggleAlarm {
-      margin: 20px auto;
-      padding: 10px 20px;
-      font-size: 1rem;
-      cursor: pointer;
+      background-color: white; /* domyślnie biały */
     }
     .order {
       margin: 10px;
@@ -26,100 +20,83 @@
 </head>
 <body>
   <h1>Kolejka zamówień</h1>
-  <button id="toggleAlarm">Wyłącz alarm</button>
   <div id="orders"></div>
 
   <script>
-    (function() {
-      let orders = [];
-      let prevCount = 0;
-      let pulseInterval = null;
-      let alarmEnabled = true;
-      const POLL_INTERVAL = 2000;
+    let orders = [];
+    let pulseInterval = null;
+    const POLL_INTERVAL = 2000;
 
-      // Pierwsze odnalezienie elementów
-      const btnToggle = document.getElementById('toggleAlarm');
-      const ordersContainer = document.getElementById('orders');
+    // Funkcja zmieniająca kolor tła na losowy RGB
+    function randomColor() {
+      const r = Math.floor(Math.random() * 256);
+      const g = Math.floor(Math.random() * 256);
+      const b = Math.floor(Math.random() * 256);
+      return `rgb(${r},${g},${b})`;
+    }
 
-      btnToggle.addEventListener('click', () => {
-        alarmEnabled = false;
-        stopPulsing();
+    // Render listy zamówień i kontrola pulsowania
+    function render() {
+      const container = document.getElementById('orders');
+      container.innerHTML = '';
+      orders.forEach(o => {
+        const div = document.createElement('div');
+        div.className = 'order';
+        div.innerHTML = `
+          #${o.id} | Biurko ${o.desk} | ${o.items}
+          <button onclick="markDone(${o.id})">Wydano</button>
+        `;
+        container.appendChild(div);
       });
 
-      function randomColor() {
-        const r = Math.floor(Math.random() * 256);
-        const g = Math.floor(Math.random() * 256);
-        const b = Math.floor(Math.random() * 256);
-        return `rgb(${r},${g},${b})`;
+      // Jeśli są elementy → włącz pulsowanie, inaczej → wyłącz
+      if (orders.length > 0) {
+        startPulsing();
+      } else {
+        stopPulsing();
       }
+    }
 
-      function startPulsing() {
-        if (!alarmEnabled || pulseInterval) return;
+    // Pobranie aktualnej listy
+    async function fetchOrders() {
+      try {
+        const res = await fetch('/api/orders');
+        orders = await res.json();
+        render();
+      } catch (e) {
+        console.error('Błąd pobierania zamówień:', e);
+      }
+    }
+
+    // Oznaczenie zamówienia jako wydane
+    async function markDone(id) {
+      await fetch(`/api/order/${id}`, { method: 'DELETE' });
+      fetchOrders();
+    }
+
+    // Start pulsowania — tylko jeśli nie jest już uruchomione
+    function startPulsing() {
+      if (pulseInterval === null) {
         pulseInterval = setInterval(() => {
           document.body.style.backgroundColor = randomColor();
         }, POLL_INTERVAL);
       }
+    }
 
-      function stopPulsing() {
-        if (pulseInterval) {
-          clearInterval(pulseInterval);
-          pulseInterval = null;
-        }
-        document.body.style.backgroundColor = 'white';
+    // Stop pulsowania — czyści interval i przywraca biały
+    function stopPulsing() {
+      if (pulseInterval !== null) {
+        clearInterval(pulseInterval);
+        pulseInterval = null;
       }
+      document.body.style.backgroundColor = 'white';
+    }
 
-      function renderList() {
-        ordersContainer.innerHTML = '';
-        orders.forEach(o => {
-          const div = document.createElement('div');
-          div.className = 'order';
-          div.innerHTML = `
-            #${o.id} | Biurko ${o.desk} | ${o.items}
-            <button data-id="${o.id}" class="done">Wydano</button>
-          `;
-          ordersContainer.appendChild(div);
-        });
-
-        // Reakcja na przyrost zamówień
-        if (orders.length > prevCount) {
-          alarmEnabled = true;
-        }
-        prevCount = orders.length;
-
-        // Sterowanie alarmem
-        if (orders.length > 0 && alarmEnabled) {
-          startPulsing();
-        } else {
-          stopPulsing();
-        }
-
-        // Podpinamy listener do nowych przycisków „Wydano”
-        document.querySelectorAll('.done').forEach(btn => {
-          btn.onclick = async () => {
-            const id = btn.getAttribute('data-id');
-            await fetch(`/api/order/${id}`, { method: 'DELETE' });
-            fetchOrders();
-          };
-        });
-      }
-
-      async function fetchOrders() {
-        try {
-          const res = await fetch('/api/orders');
-          if (!res.ok) throw new Error(`HTTP ${res.status}`);
-          orders = await res.json();
-          renderList();
-        } catch (e) {
-          console.error('fetchOrders error:', e);
-        }
-      }
-
-      // Startujemy polling
-      window.addEventListener('load', () => {
-        fetchOrders();
-        setInterval(fetchOrders, POLL_INTERVAL);
-      });
-    })();
+    // Uruchamiamy polling
+    window.onload = () => {
+      fetchOrders();
+      setInterval(fetchOrders, POLL_INTERVAL);
+    };
   </script>
 </body>
 </html>
