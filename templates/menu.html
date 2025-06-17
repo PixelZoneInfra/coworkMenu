@@ -3,49 +3,53 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Menu – stolik <span id="deskNum"></span></title>
+  <title>Menu Restauracji</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
   <link rel="stylesheet" href="{{ url_for('static', filename='menu.css') }}">
 </head>
 <body>
   <div class="container">
-    <h1>Menu – stolik <span id="deskNum"></span></h1>
-    <div id="limitBar">
-      Limit: <span id="used">0</span>/<span id="limit">0</span>,
-      Reset za <span id="timer">—</span>s
-    </div>
-
-    <!-- Przykładowa kategoria -->
-    <div class="category">
-      <div class="category-header">☕ Gorące napoje</div>
-      <div class="category-items">
-        <div class="item" data-name="Caffe Latte M" data-price="12.90">
-          <div class="item-name">Caffe Latte M</div>
-          <div class="qty-controls">
-            <button class="dec">–</button>
-            <input type="number" class="qty" min="0" max="20" value="0">
-            <button class="inc">+</button>
-          </div>
-          <div class="item-price">12.90 PLN</div>
-        </div>
-        <!-- dodaj kolejne items analogicznie -->
+    <header>
+      <h1>Menu Restauracji</h1>
+      <div class="desk-info">
+        <span>Stolik: <span id="desk-number">–</span></span>
+        <span id="order-limit-info">(0/0)</span>
       </div>
+    </header>
+
+    <form id="order-form" class="menu-form">
+      <div id="menu-categories" class="menu-container"></div>
+
+      <div class="order-summary" id="order-summary">
+        <h3>Podsumowanie Zamówienia</h3>
+        <div id="summary-items"></div>
+        <div class="total-price">Razem: <span id="total-price">0.00</span> PLN</div>
+      </div>
+
+      <div class="customer-info">
+        <input type="text" id="customer-name" placeholder="Twoje imię" required>
+      </div>
+
+      <div class="form-actions">
+        <button type="button" id="clear-order">Wyczyść</button>
+        <button type="submit" id="submit-order">Złóż Zamówienie</button>
+      </div>
+    </form>
+
+    <div class="order-confirmation" id="order-confirmation">
+      <h2>Zamówienie Przyjęte!</h2>
+      <p>Numer zamówienia: <span id="confirmation-order-id">–</span></p>
+      <p>Suma: <span id="confirmation-total">0.00</span> PLN</p>
+      <button id="new-order-btn">Nowe Zamówienie</button>
     </div>
 
-    <!-- Akcje -->
-    <div class="actions">
-      <button id="clearAll">Wyczyść</button>
-      <button id="orderBtn">Zamawiam</button>
-    </div>
-
-    <!-- Podsumowanie -->
-    <div id="summary" class="hidden">
-      <h2>Podsumowanie</h2>
-      <div id="summaryList"></div>
-      <div class="summary-total">Razem: <span id="summarySum">0.00</span> PLN</div>
-      <button id="confirmBtn">Potwierdź</button>
-      <button id="editBtn">Edytuj</button>
+    <div class="order-limit-warning" id="order-limit-warning">
+      <h2>Limit Zamówień</h2>
+      <p>Osiągnięto maksymalną liczbę zamówień dla tego stolika.</p>
+      <p>Możesz złożyć kolejne za: <span id="remaining-time">0</span> s</p>
     </div>
   </div>
-  <script src="{{ url_for('static',filename='script-menu.js') }}"></script>
+
+  <script src="{{ url_for('static', filename='menu.js') }}"></script>
 </body>
 </html>
