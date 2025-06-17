@@ -9,7 +9,7 @@ DB_PATH = 'order_queue.db'
 ANTISPAM_LIMIT = 2  # max zamówień
 ANTISPAM_WINDOW = timedelta(minutes=5)
 
-app = Flask(__name__)
+app = Flask(__name__, template_folder='templates')
 CORS(app)
 lock = threading.Lock()
 
