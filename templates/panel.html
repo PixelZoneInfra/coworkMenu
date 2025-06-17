@@ -3,13 +3,19 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Panel Zarządzania – Restauracja</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <title>Panel Zamówień</title>
+  <link rel="stylesheet" href="{{ url_for('static',filename='style.css') }}">
 </head>
 <body>
-  <h1>Panel Zarządzania</h1>
+  <h1>Panel Zamówień</h1>
   <button id="toggleAlarm">Wyłącz alarm</button>
-  <div id="orders"></div>
-  <script src="{{ url_for('static', filename='script-panel.js') }}"></script>
+
+  <h2>Aktywne zamówienia</h2>
+  <div id="active"></div>
+
+  <h2>Zakończone</h2>
+  <div id="done"></div>
+
+  <script src="{{ url_for('static',filename='script-panel.js') }}"></script>
 </body>
 </html>
