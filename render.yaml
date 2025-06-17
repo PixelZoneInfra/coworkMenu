@@ -5,8 +5,20 @@ services:
     env: python
     region: oregon
     plan: free
-    buildCommand: "pip install -r backend/requirements.txt"
-    startCommand: "python backend/app.py"
+    workingDirectory: backend           # Przejdź do katalogu backend przed uruchomieniem
+    buildCommand: "pip install -r requirements.txt"
+    startCommand: "python app.py"
     envVars:
       - key: FLASK_ENV
         value: production
+      - key: SECRET_KEY
+        value: "twoj-secret-key"
+      - key: ANTISPAM_LIMIT
+        value: "2"
+      - key: ANTISPAM_WINDOW_MINUTES
+        value: "5"
+# Opcjonalnie HTTP Basic Auth
+#      - key: BASIC_AUTH_USER
+#        value: "user"
+#      - key: BASIC_AUTH_PASSWORD
+#        value: "password"
