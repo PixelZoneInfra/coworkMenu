@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Restauracja – Menu</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="container">
+    <h1>Menu – stolik <span id="deskNum"></span></h1>
+
+    <!-- Kategorie -->
+    <div class="category" data-cat="napoje">
+      <div class="category-header">☕ Gorące napoje</div>
+      <div class="category-items">
+        <div class="item">
+          <div class="item-name">Kawa</div>
+          <div class="qty-controls">
+            <button class="dec">–</button>
+            <input type="number" class="qty" min="0" max="20" value="0">
+            <button class="inc">+</button>
+          </div>
+        </div>
+        <div class="item">
+          <div class="item-name">Herbata</div>
+          <div class="qty-controls">
+            <button class="dec">–</button>
+            <input type="number" class="qty" min="0" max="20" value="0">
+            <button class="inc">+</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="category" data-cat="ciasta">
+      <div class="category-header">🍰 Ciasta i słodycze</div>
+      <div class="category-items">
+        <div class="item">
+          <div class="item-name">Sernik</div>
+          <div class="qty-controls">
+            <button class="dec">–</button>
+            <input type="number" class="qty" min="0" max="20" value="0">
+            <button class="inc">+</button>
+          </div>
+        </div>
+        <!-- dodaj kolejne produkty -->
+      </div>
+    </div>
+
+    <!-- Więcej kategorii wedle potrzeb -->
+
+    <!-- Sterowanie -->
+    <div style="text-align:center; margin:1rem 0">
+      <button id="clearAll">Wyczyść</button>
+      <button id="orderBtn">Zamawiam</button>
+    </div>
+
+    <!-- Modal podsumowania -->
+    <div id="summaryModal">
+      <div id="summaryContent">
+        <h2>Podsumowanie zamówienia</h2>
+        <div id="summaryList"></div>
+        <div style="margin-top:1rem">
+          <button id="editBtn">Edytuj</button>
+          <button id="confirmBtn">Potwierdź</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Info limitu -->
+    <p id="limitInfo"></p>
+  </div>
+
+  <script src="script-menu.js"></script>
+</body>
+</html>
