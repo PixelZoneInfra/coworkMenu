@@ -4,14 +4,14 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>Restauracja – Menu</title>
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
   <div class="container">
     <h1>Menu – stolik <span id="deskNum"></span></h1>
 
     <!-- Kategorie -->
-    <div class="category" data-cat="napoje">
+    <div class="category">
       <div class="category-header">☕ Gorące napoje</div>
       <div class="category-items">
         <div class="item">
@@ -33,7 +33,7 @@
       </div>
     </div>
 
-    <div class="category" data-cat="ciasta">
+    <div class="category">
       <div class="category-header">🍰 Ciasta i słodycze</div>
       <div class="category-items">
         <div class="item">
@@ -44,14 +44,12 @@
             <button class="inc">+</button>
           </div>
         </div>
-        <!-- dodaj kolejne produkty -->
+        <!-- dodaj inne pozycje analogicznie -->
       </div>
     </div>
 
-    <!-- Więcej kategorii wedle potrzeb -->
-
     <!-- Sterowanie -->
-    <div style="text-align:center; margin:1rem 0">
+    <div class="actions">
       <button id="clearAll">Wyczyść</button>
       <button id="orderBtn">Zamawiam</button>
     </div>
@@ -61,7 +59,7 @@
       <div id="summaryContent">
         <h2>Podsumowanie zamówienia</h2>
         <div id="summaryList"></div>
-        <div style="margin-top:1rem">
+        <div class="modal-actions">
           <button id="editBtn">Edytuj</button>
           <button id="confirmBtn">Potwierdź</button>
         </div>
@@ -72,6 +70,6 @@
     <p id="limitInfo"></p>
   </div>
 
-  <script src="script-menu.js"></script>
+  <script src="{{ url_for('static', filename='script-menu.js') }}"></script>
 </body>
 </html>
